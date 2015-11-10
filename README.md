@@ -3,11 +3,11 @@ Audio Game Project
 Quick sketch
 
 Summary:
-Investigate Unity binaural audio plugin.
-App must use binaural audio.
-App must have multiple mini games.
-1st deadline, 23 November, must present “alpha” stage, consisting of a demo app using the android binaural audio library/s, in a single, very simple mini game. NOTE: this is to replace the semantic web’s project 1.
->Haptic Feedback.
+-Investigate Unity binaural audio plugin.
+-App must use binaural audio.
+-App must have multiple mini games.
+-1st deadline, 23 November, must present “alpha” stage, consisting of a demo app using the android binaural audio library/s, in a single, very simple mini game. NOTE: this is to replace the semantic web’s project 1.
+-Haptic Feedback.
 
 Mini game ideas:
 Find the object. Binaural audio coming from target. User must input direction step until he reaches target.  (snake)
