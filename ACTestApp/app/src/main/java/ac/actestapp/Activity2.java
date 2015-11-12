@@ -1,40 +1,22 @@
 package ac.actestapp;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
-import android.os.Vibrator;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.hardware.SensorListener;
-import android.hardware.SensorManager;
 import android.widget.Toast;
 
-import com.immersion.uhl.Launcher;
-
-import java.io.Console;
 import java.io.IOException;
-import java.util.Timer;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FirstActivity extends AppCompatActivity {
-    private Launcher m_launcher;
-    /* put this into your activity class */
-    private float mAccel; // acceleration apart from gravity
-    private float mAccelCurrent; // current acceleration including gravity
-    private float mAccelLast; // last acceleration including gravity
-    private static final int TIME_THRESHOLD = 100;
-
+public class Activity2 extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -56,79 +38,30 @@ public class FirstActivity extends AppCompatActivity {
     private View mContentView;
     private View mControlsView;
     private boolean mVisible;
-    // The following are used for the shake detection
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private ShakeDetector mShakeDetector;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_first);
-        SensorManager sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
+        setContentView(R.layout.activity_2);
+
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-        try {
-            m_launcher = new Launcher(this);
-        } catch (RuntimeException e) {
-//            Console("My App", e.getMessage());
-        }
-        // ShakeDetector initialization
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager
-                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
 
+        // Set up the user interaction to manually show or hide the system UI.
+        mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onShake(int count) {
-				/*
-				 * The following method, "handleShakeEvent(count):" is a stub //
-				 * method you would use to setup whatever you want done once the
-				 * device has been shook.
-				 */
-                handleShakeEvent(count);
-
+            public void onClick(View view) {
+                toggle();
             }
         });
-
-
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
-
-    }
-
-    //fapmaster
-    private void handleShakeEvent(int count) {
-        if(count<3)
-            m_launcher.play(Launcher.ENGINE3_33);
-        else if(count >= 3 && count < 5)
-            m_launcher.play(Launcher.ENGINE3_66);
-        else
-            m_launcher.play(Launcher.ENGINE4_100);
-        Toast.makeText(this, "shake detected w/ speed: " + count, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Add the following line to register the Session Manager Listener onResume
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
-    }
-
-    @Override
-    public void onPause() {
-        // Add the following line to unregister the Sensor Manager onPause
-        mSensorManager.unregisterListener(mShakeDetector);
-        super.onPause();
+        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener3);
     }
 
     @Override
@@ -138,7 +71,7 @@ public class FirstActivity extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        //delayedHide(100);
+        delayedHide(100);
     }
 
     /**
@@ -146,43 +79,21 @@ public class FirstActivity extends AppCompatActivity {
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+    private final View.OnTouchListener mDelayHideTouchListener3 = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
+         //   onPause();
+           // setContentView(R.layout.activity_first);
+
             if (AUTO_HIDE) {
-                    try {
-                        m_launcher.play(Launcher.BOUNCE_33);
-                        onPause();
-                        setContentView(R.layout.activity_2);
-                    } catch (RuntimeException e) {
-                    }
-
-
-                //handleShakeEvent(10);
-
-               // delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
-    private final View.OnTouchListener mDelayHideTouchListener2 = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
+                MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.test);
                 try {
-                   // MediaPlayer mediaPlayer =
-                            MediaPlayer.create(getApplicationContext(), R.raw.test).start();
-
-                  //  mediaPlayer.start();
-
-
-                    //m_launcher.play(Launcher.ENGINE4_100);
-
-                } catch (RuntimeException e) {
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                // delayedHide(AUTO_HIDE_DELAY_MILLIS);
-               // handleShakeEvent(10);
-
+                mediaPlayer.start(); // no need to call prepare(); create() does that for you
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
             return false;
         }
@@ -269,4 +180,3 @@ public class FirstActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 }
-
