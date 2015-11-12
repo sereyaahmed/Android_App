@@ -3,6 +3,7 @@ package ac.actestapp;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.CountDownTimer;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
+
+import static java.lang.Thread.sleep;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -22,6 +27,7 @@ public class Activity2 extends AppCompatActivity {
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
+    public ArrayList<MediaPlayer> car;
     private static final boolean AUTO_HIDE = true;
 
     /**
@@ -43,6 +49,27 @@ public class Activity2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        car = new ArrayList<>();
+        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_center));
+        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
+        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_right));
+        final Random gen = new Random();
+
+
+
+        final CountDownTimer cdt = new CountDownTimer(100,100){ // makes random direction car sound, delayed (duration, tick-time).
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                car.get(gen.nextInt(3)).start();
+            }
+
+
+        };
 
         setContentView(R.layout.activity_2);
 
@@ -50,15 +77,26 @@ public class Activity2 extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls_act2);
         mContentView = findViewById(R.id.fullscreen_content_act2);
 
-
-        // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
+        mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
-            public void onClick(View view) {
-               show();
-                MediaPlayer.create(getApplicationContext(), R.raw.test).start();
+            public void onSwipeLeft() {
+                MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+            }
+
+            public void onSwipeRight() {
+                MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+            }
+            public void onSwipeTop(){
+               cdt.start();
+            }
+            @Override
+            public void onClick() {
+                show();
             }
         });
+
+        // Set up the user interaction to manually show or hide the system UI.
+
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
@@ -84,8 +122,6 @@ public class Activity2 extends AppCompatActivity {
     private final View.OnTouchListener mDelayHideTouchListener3 = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-         //   onPause();
-           // setContentView(R.layout.activity_first);
 
             Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
             startActivity(intent);
@@ -154,6 +190,8 @@ public class Activity2 extends AppCompatActivity {
                 actionBar.show();
             }
             mControlsView.setVisibility(View.VISIBLE);
+
+
         }
     };
 
