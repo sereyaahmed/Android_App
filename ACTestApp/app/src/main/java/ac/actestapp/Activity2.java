@@ -10,24 +10,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-
-import static java.lang.Thread.sleep;
-
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class Activity2 extends AppCompatActivity {
+public class Activity2 extends AppCompatActivity { //Highway game
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    public ArrayList<MediaPlayer> car;
+    public ArrayList<MediaPlayer> car; // sound files for passing cars will be loaded here.
     private static final boolean AUTO_HIDE = true;
 
     /**
@@ -49,15 +43,18 @@ public class Activity2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MediaPlayer scrape = MediaPlayer.create(getApplicationContext(),R.raw.scrape); // load scrape sound
         car = new ArrayList<>();
-        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_center));
+        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_left));
+        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_right));
         final Random gen = new Random();
+        final boolean[] position_right = {true}; // your vehicle position.
 
 
+        final CountDownTimer cdt = new CountDownTimer(1000,1000){ // makes random direction car sound, delayed (duration, tick-time).
 
-        final CountDownTimer cdt = new CountDownTimer(100,100){ // makes random direction car sound, delayed (duration, tick-time).
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -65,7 +62,8 @@ public class Activity2 extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                car.get(gen.nextInt(3)).start();
+                car.get(gen.nextInt(4)).start(); // random car "direction".
+                this.start();
             }
 
 
@@ -80,15 +78,30 @@ public class Activity2 extends AppCompatActivity {
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
-                MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+                //MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+                if(position_right[0])
+                position_right[0] =false; // move to the left.
+                else MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
             }
-
+            @Override
             public void onSwipeRight() {
-                MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+                //MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+                if(!position_right[0])
+                    position_right[0] =true; // move to the left.
+                else //MediaPlayer.create(getApplicationContext(),R.raw.scrape);
+                    MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
             }
+            @Override
             public void onSwipeTop(){
                cdt.start();
             }
+            @Override
+            public void onSwipeBottom(){
+                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
+                startActivity(intent);
+                cdt.cancel();
+                onPause();
+                            }
             @Override
             public void onClick() {
                 show();
