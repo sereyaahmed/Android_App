@@ -1,6 +1,7 @@
 package ac.actestapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -46,15 +47,15 @@ public class Activity2 extends AppCompatActivity {
         setContentView(R.layout.activity_2);
 
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
+        mControlsView = findViewById(R.id.fullscreen_content_controls_act2);
+        mContentView = findViewById(R.id.fullscreen_content_act2);
 
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //toggle();
+               show();
                 MediaPlayer.create(getApplicationContext(), R.raw.test).start();
             }
         });
@@ -86,11 +87,8 @@ public class Activity2 extends AppCompatActivity {
          //   onPause();
            // setContentView(R.layout.activity_first);
 
-            if (AUTO_HIDE) {
-
-                finish();
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
+            Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
+            startActivity(intent);
             return false;
         }
     };

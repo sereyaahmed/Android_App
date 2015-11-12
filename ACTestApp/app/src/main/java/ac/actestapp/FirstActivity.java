@@ -2,6 +2,7 @@ package ac.actestapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -155,8 +156,10 @@ public class FirstActivity extends AppCompatActivity {
             if (AUTO_HIDE) {
                     try {
                         m_launcher.play(Launcher.BOUNCE_33);
-                        onPause();
-                        setContentView(R.layout.activity_2);
+                        Intent intent = new Intent(getApplicationContext(), Activity2.class);
+                        startActivity(intent);
+                       // setContentView(R.layout.activity_2); buggy.
+
                     } catch (RuntimeException e) {
                     }
 
