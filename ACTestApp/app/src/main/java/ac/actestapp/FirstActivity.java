@@ -28,6 +28,7 @@ import java.util.Timer;
  * status bar and navigation/system bar) with user interaction.
  */
 public class FirstActivity extends AppCompatActivity {
+    MediaPlayer mediaPlayer;
     private Launcher m_launcher;
     /* put this into your activity class */
     private float mAccel; // acceleration apart from gravity
@@ -71,6 +72,7 @@ public class FirstActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
+       mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.test);
 
         try {
             m_launcher = new Launcher(this);
@@ -101,6 +103,7 @@ public class FirstActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
+       //MediaPlayer mediaPlayer= MediaPlayer.create(getApplicationContext(), R.raw.test);
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
         findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
 
@@ -171,7 +174,7 @@ public class FirstActivity extends AppCompatActivity {
             if (AUTO_HIDE) {
                 try {
                    // MediaPlayer mediaPlayer =
-                            MediaPlayer.create(getApplicationContext(), R.raw.test).start();
+                           mediaPlayer.start();
 
                   //  mediaPlayer.start();
 

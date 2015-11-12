@@ -54,14 +54,15 @@ public class Activity2 extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toggle();
+                //toggle();
+                MediaPlayer.create(getApplicationContext(), R.raw.test).start();
             }
         });
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener3);
+        findViewById(R.id.highway_button).setOnTouchListener(mDelayHideTouchListener3);
     }
 
     @Override
@@ -86,13 +87,8 @@ public class Activity2 extends AppCompatActivity {
            // setContentView(R.layout.activity_first);
 
             if (AUTO_HIDE) {
-                MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.test);
-                try {
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.start(); // no need to call prepare(); create() does that for you
+
+                finish();
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
             return false;
