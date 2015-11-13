@@ -22,6 +22,7 @@ import com.immersion.uhl.Launcher;
 
 import java.io.Console;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 
 /**
@@ -63,12 +64,16 @@ public class FirstActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
-
+    ArrayList<MediaPlayer> selection;
+    int select_index=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        selection = new ArrayList<>();
+        selection.add(MediaPlayer.create(getApplicationContext(),R.raw.select_highway));
+        selection.add(MediaPlayer.create(getApplicationContext(),R.raw.select_simon));
+        selection.add(MediaPlayer.create(getApplicationContext(),R.raw.select_snake));
         setContentView(R.layout.activity_first);
         SensorManager sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
         mVisible = true;
@@ -102,7 +107,6 @@ public class FirstActivity extends AppCompatActivity {
         });
 
 
-
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
@@ -114,21 +118,33 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onSwipeLeft() {
                 MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+                if(select_index>1)
+                select_index--;
+                else select_index=selection.size()-1;
 
             }
+
             @Override
             public void onSwipeRight() {
                 MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+                if(select_index<selection.size())
+                    select_index++;
+                else select_index=0;
 
             }
+
             @Override
-            public void onSwipeTop(){
-
+            public void onSwipeTop() {
+                m_launcher.play(Launcher.BOUNCE_33);
+                Intent intent = new Intent(getApplicationContext(), Activity2.class);
+                startActivity(intent);
             }
+
             @Override
-            public void onSwipeBottom(){
+            public void onSwipeBottom() {
 
             }
+
             @Override
             public void onClick() {
                 mediaPlayer.stop();
