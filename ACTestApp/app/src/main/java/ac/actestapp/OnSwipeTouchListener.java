@@ -27,7 +27,7 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
     }
     public boolean onTouch(View v, MotionEvent event) {
         if (gestureDetector.onTouchEvent(event)) return true;
-        else {onClick(); return false;}
+        else { return false;}
     }
     public void onClick(){
 
@@ -39,6 +39,8 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
+
+           // onClick();
             return true;
         }
 
@@ -46,7 +48,8 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             float distanceX = e2.getX() - e1.getX();
             float distanceY = e2.getY() - e1.getY();
-            if (distanceX > 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
+            if(Math.abs(distanceX)+Math.abs(distanceY)<SWIPE_DISTANCE_THRESHOLD) onClick();
+            else if (distanceX > 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
                     onSwipeRight(); return true;}
                 else if (distanceX < 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
                     onSwipeLeft();return true;}
@@ -54,10 +57,8 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
                         onSwipeTop();return true;}
                     else if(distanceY > 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
                     onSwipeBottom();return true;}
-
-
-
-            return false;
+          //  else {onClick();
+           return false;
         }
     }
 }

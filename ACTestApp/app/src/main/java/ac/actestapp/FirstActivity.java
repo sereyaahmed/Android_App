@@ -30,6 +30,7 @@ import java.util.Timer;
  */
 public class FirstActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer2;
     private Launcher m_launcher;
     /* put this into your activity class */
     private float mAccel; // acceleration apart from gravity
@@ -73,7 +74,8 @@ public class FirstActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-       mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.test);
+       mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.welcome);
+       mediaPlayer2 = MediaPlayer.create(getApplicationContext(), R.raw.menu_main);
 
         try {
             m_launcher = new Launcher(this);
@@ -105,8 +107,35 @@ public class FirstActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
        //MediaPlayer mediaPlayer= MediaPlayer.create(getApplicationContext(), R.raw.test);
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
+        //---------- BUTTONS
+       // findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+      //  findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
+        mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
+            @Override
+            public void onSwipeLeft() {
+                MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+
+            }
+            @Override
+            public void onSwipeRight() {
+                MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+
+            }
+            @Override
+            public void onSwipeTop(){
+
+            }
+            @Override
+            public void onSwipeBottom(){
+
+            }
+            @Override
+            public void onClick() {
+                mediaPlayer.stop();
+                mediaPlayer2.seekTo(0);
+                mediaPlayer2.start();
+            }
+        });
 
     }
 
@@ -132,18 +161,21 @@ public class FirstActivity extends AppCompatActivity {
     public void onPause() {
         // Add the following line to unregister the Sensor Manager onPause
         mSensorManager.unregisterListener(mShakeDetector);
+        mediaPlayer.stop();
+        mediaPlayer2.stop();
         super.onPause();
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
+        mediaPlayer.start();
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
         //delayedHide(100);
     }
+
 
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
