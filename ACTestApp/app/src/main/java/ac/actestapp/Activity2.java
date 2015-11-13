@@ -23,7 +23,8 @@ public class Activity2 extends AppCompatActivity { //Highway game
      */
     public ArrayList<MediaPlayer> car; // sound files for passing cars will be loaded here.
     private static final boolean AUTO_HIDE = true;
-
+    final boolean[] position_right = {true}; // your vehicle position.
+    final int[] rand = {0};
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
@@ -45,15 +46,15 @@ public class Activity2 extends AppCompatActivity { //Highway game
         super.onCreate(savedInstanceState);
         MediaPlayer scrape = MediaPlayer.create(getApplicationContext(),R.raw.scrape); // load scrape sound
         car = new ArrayList<>();
-        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_left));
-        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
+        //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_left));
+        //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_right));
+
         final Random gen = new Random();
-        final boolean[] position_right = {true}; // your vehicle position.
 
 
-        final CountDownTimer cdt = new CountDownTimer(1000,1000){ // makes random direction car sound, delayed (duration, tick-time).
+        final CountDownTimer cdt = new CountDownTimer(1500,1500){ // makes random direction car sound, delayed (duration, tick-time).
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -62,8 +63,14 @@ public class Activity2 extends AppCompatActivity { //Highway game
 
             @Override
             public void onFinish() {
-                car.get(gen.nextInt(4)).start(); // random car "direction".
-                this.start();
+                if((rand[0]==0 && !position_right[0])||(rand[0]==1&&position_right[0])){
+                    MediaPlayer.create(getApplicationContext(),R.raw.crash).start();
+                    this.cancel();
+                }
+                else{
+                rand[0] =gen.nextInt(2);
+                car.get(rand[0]).start(); // random car "direction".
+                this.start();}
             }
 
 
@@ -93,7 +100,11 @@ public class Activity2 extends AppCompatActivity { //Highway game
             }
             @Override
             public void onSwipeTop(){
-               cdt.start();
+                cdt.cancel(); // cancel previous game
+                MediaPlayer.create(getApplicationContext(),R.raw.engine_start).start();
+                rand[0]=0;
+                position_right[0]=true;
+               cdt.start(); // start game.
             }
             @Override
             public void onSwipeBottom(){
