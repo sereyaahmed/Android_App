@@ -27,8 +27,9 @@ public class Activity2 extends AppCompatActivity { //Highway game
     public ArrayList<MediaPlayer> car; // sound files for passing cars will be loaded here.
     private static final boolean AUTO_HIDE = true;
     final boolean[] position_right = {true}; // your vehicle position.
-    final int[] rand = {0};
+    final int[] rand= {3};
     private Launcher m_launcher;
+    MediaPlayer media_info;
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
@@ -50,6 +51,7 @@ public class Activity2 extends AppCompatActivity { //Highway game
         super.onCreate(savedInstanceState);
         MediaPlayer scrape = MediaPlayer.create(getApplicationContext(),R.raw.scrape); // load scrape sound
         car = new ArrayList<>();
+        media_info = MediaPlayer.create(getApplicationContext(), R.raw.highway_info);
         //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_left));
         //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
@@ -108,10 +110,11 @@ public class Activity2 extends AppCompatActivity { //Highway game
             public void onSwipeTop(){
                 cdt.cancel(); // cancel previous game
                 MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
+                media_info.stop();
                 engine.start();
-                rand[0]=0;
                 position_right[0]=true;
                 while(engine.isPlaying());
+                rand[0]=3;
                cdt.start(); // start game.
             }
             @Override
@@ -140,7 +143,7 @@ public class Activity2 extends AppCompatActivity { //Highway game
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        MediaPlayer.create(getApplicationContext(),R.raw.highway_info).start();
+        media_info.start();
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
