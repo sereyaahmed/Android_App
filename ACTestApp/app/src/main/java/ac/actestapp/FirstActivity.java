@@ -22,6 +22,7 @@ import com.immersion.uhl.Launcher;
 
 import java.io.Console;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 
 /**
@@ -30,6 +31,7 @@ import java.util.Timer;
  */
 public class FirstActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer2;
     private Launcher m_launcher;
     /* put this into your activity class */
     private float mAccel; // acceleration apart from gravity
@@ -62,18 +64,23 @@ public class FirstActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
-
+    ArrayList<MediaPlayer> selection;
+    int select_index=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        selection = new ArrayList<>();
+        selection.add(MediaPlayer.create(getApplicationContext(),R.raw.select_highway));
+        selection.add(MediaPlayer.create(getApplicationContext(),R.raw.select_simon));
+        selection.add(MediaPlayer.create(getApplicationContext(),R.raw.select_snake));
         setContentView(R.layout.activity_first);
         SensorManager sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-       mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.test);
+       mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.welcome);
+       mediaPlayer2 = MediaPlayer.create(getApplicationContext(), R.raw.menu_main);
 
         try {
             m_launcher = new Launcher(this);
@@ -100,13 +107,65 @@ public class FirstActivity extends AppCompatActivity {
         });
 
 
-
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
        //MediaPlayer mediaPlayer= MediaPlayer.create(getApplicationContext(), R.raw.test);
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
+        //---------- BUTTONS
+       // findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+      //  findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
+        mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
+            @Override
+            public void onSwipeLeft() {
+                mediaPlayer.stop();
+                mediaPlayer2.stop();
+               // selection.get(select_index).pause();
+                MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+                if(select_index>0)
+                select_index--;
+                else select_index=selection.size()-1;
+                selection.get(select_index).seekTo(0);
+                selection.get(select_index).start();
+
+            }
+
+            @Override
+            public void onSwipeRight() {
+                mediaPlayer.stop();
+                mediaPlayer2.stop();
+                MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+              //  selection.get(select_index).pause();
+                if(select_index<selection.size()-1)
+                    select_index++;
+                else select_index=0;
+                selection.get(select_index).seekTo(0);
+                selection.get(select_index).start();
+
+            }
+
+            @Override
+            public void onSwipeTop() {
+                if (select_index==0){
+                m_launcher.play(Launcher.BOUNCE_33);
+                Intent intent = new Intent(getApplicationContext(), Activity2.class);
+                startActivity(intent);}
+                else MediaPlayer.create(getApplicationContext(),R.raw.unavailable).start();
+            }
+
+            @Override
+            public void onSwipeBottom() {
+                mediaPlayer.stop();
+                mediaPlayer2.seekTo(0);
+                mediaPlayer2.start();
+            }
+
+            @Override
+            public void onClick() {
+                mediaPlayer.stop();
+                mediaPlayer2.seekTo(0);
+                mediaPlayer2.start();
+            }
+        });
 
     }
 
@@ -132,18 +191,21 @@ public class FirstActivity extends AppCompatActivity {
     public void onPause() {
         // Add the following line to unregister the Sensor Manager onPause
         mSensorManager.unregisterListener(mShakeDetector);
+        mediaPlayer.stop();
+        mediaPlayer2.stop();
         super.onPause();
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
+        mediaPlayer.start();
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
         //delayedHide(100);
     }
+
 
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the

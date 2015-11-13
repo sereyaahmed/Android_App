@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.immersion.uhl.Launcher;
+
 import java.util.ArrayList;
 import java.util.Random;
 /**
@@ -25,6 +28,7 @@ public class Activity2 extends AppCompatActivity { //Highway game
     private static final boolean AUTO_HIDE = true;
     final boolean[] position_right = {true}; // your vehicle position.
     final int[] rand = {0};
+    private Launcher m_launcher;
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
@@ -50,6 +54,7 @@ public class Activity2 extends AppCompatActivity { //Highway game
         //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_right));
+        m_launcher =  new Launcher(this);
 
         final Random gen = new Random();
 
@@ -63,8 +68,9 @@ public class Activity2 extends AppCompatActivity { //Highway game
 
             @Override
             public void onFinish() {
-                if((rand[0]==0 && !position_right[0])||(rand[0]==1&&position_right[0])){
-                    MediaPlayer.create(getApplicationContext(),R.raw.crash).start();
+                if((rand[0]==0 && !position_right[0])||(rand[0]==1&&position_right[0])){ // if crash
+                    MediaPlayer.create(getApplicationContext(),R.raw.crash).start(); // boom
+                    m_launcher.play(Launcher.EXPLOSION3); // vzt vzt
                     this.cancel();
                 }
                 else{
@@ -101,9 +107,11 @@ public class Activity2 extends AppCompatActivity { //Highway game
             @Override
             public void onSwipeTop(){
                 cdt.cancel(); // cancel previous game
-                MediaPlayer.create(getApplicationContext(),R.raw.engine_start).start();
+                MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
+                engine.start();
                 rand[0]=0;
                 position_right[0]=true;
+                while(engine.isPlaying());
                cdt.start(); // start game.
             }
             @Override
@@ -125,13 +133,14 @@ public class Activity2 extends AppCompatActivity { //Highway game
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.highway_button).setOnTouchListener(mDelayHideTouchListener3);
+       // -------------- adding buttons is done in the activity layout xml.
+       // findViewById(R.id.highway_button).setOnTouchListener(mDelayHideTouchListener3);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
+        MediaPlayer.create(getApplicationContext(),R.raw.highway_info).start();
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
