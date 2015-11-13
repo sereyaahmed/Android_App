@@ -117,32 +117,46 @@ public class FirstActivity extends AppCompatActivity {
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
+                mediaPlayer.stop();
+                mediaPlayer2.stop();
+               // selection.get(select_index).pause();
                 MediaPlayer.create(getApplicationContext(), R.raw.left).start();
-                if(select_index>1)
+                if(select_index>0)
                 select_index--;
                 else select_index=selection.size()-1;
+                selection.get(select_index).seekTo(0);
+                selection.get(select_index).start();
 
             }
 
             @Override
             public void onSwipeRight() {
+                mediaPlayer.stop();
+                mediaPlayer2.stop();
                 MediaPlayer.create(getApplicationContext(), R.raw.right).start();
-                if(select_index<selection.size())
+              //  selection.get(select_index).pause();
+                if(select_index<selection.size()-1)
                     select_index++;
                 else select_index=0;
+                selection.get(select_index).seekTo(0);
+                selection.get(select_index).start();
 
             }
 
             @Override
             public void onSwipeTop() {
+                if (select_index==0){
                 m_launcher.play(Launcher.BOUNCE_33);
                 Intent intent = new Intent(getApplicationContext(), Activity2.class);
-                startActivity(intent);
+                startActivity(intent);}
+                else MediaPlayer.create(getApplicationContext(),R.raw.unavailable).start();
             }
 
             @Override
             public void onSwipeBottom() {
-
+                mediaPlayer.stop();
+                mediaPlayer2.seekTo(0);
+                mediaPlayer2.start();
             }
 
             @Override
