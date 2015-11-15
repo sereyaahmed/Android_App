@@ -6,4 +6,6 @@
     <string name="dummy_content">Audio\nGames</string>
 
     <string name="title_activity_2">Highway</string>
+
+    <string name="title_activity_simon__says">Simon_Says</string>
 </resources>

@@ -1,6 +1,7 @@
 package ac.actestapp;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -149,6 +150,11 @@ public class FirstActivity extends AppCompatActivity {
                 m_launcher.play(Launcher.BOUNCE_33);
                 Intent intent = new Intent(getApplicationContext(), Activity2.class);
                 startActivity(intent);}
+                else if(select_index==1) {
+                    m_launcher.play(Launcher.EXPLOSION3);
+                    Intent intent = new Intent (getApplicationContext(), Simon_Says.class);
+                    startActivity(intent);
+                }
                 else MediaPlayer.create(getApplicationContext(),R.raw.unavailable).start();
             }
 
