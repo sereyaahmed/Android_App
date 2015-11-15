@@ -115,6 +115,7 @@ public class FirstActivity extends AppCompatActivity {
         //---------- BUTTONS
        // findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
       //  findViewById(R.id.dummy_button2).setOnTouchListener(mDelayHideTouchListener2);
+
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
@@ -175,7 +176,7 @@ public class FirstActivity extends AppCompatActivity {
 
     }
 
-    //fapmaster
+
     private void handleShakeEvent(int count) {
         if(count<3)
             m_launcher.play(Launcher.ENGINE3_33);
@@ -218,57 +219,57 @@ public class FirstActivity extends AppCompatActivity {
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                    try {
-                        m_launcher.play(Launcher.BOUNCE_33);
-                        Intent intent = new Intent(getApplicationContext(), Activity2.class);
-                        startActivity(intent);
-                       // setContentView(R.layout.activity_2); buggy.
+//    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+//        @Override
+//        public boolean onTouch(View view, MotionEvent motionEvent) {
+//            if (AUTO_HIDE) {
+//                    try {
+//                        m_launcher.play(Launcher.BOUNCE_33);
+//                        Intent intent = new Intent(getApplicationContext(), Activity2.class);
+//                        startActivity(intent);
+//                       // setContentView(R.layout.activity_2); buggy.
+//
+//                    } catch (RuntimeException e) {
+//                    }
+//
+//
+//                //handleShakeEvent(10);
+//
+//               // delayedHide(AUTO_HIDE_DELAY_MILLIS);
+//            }
+//            return false;
+//        }
+//    };
+//    private final View.OnTouchListener mDelayHideTouchListener2 = new View.OnTouchListener() {
+//        @Override
+//        public boolean onTouch(View view, MotionEvent motionEvent) {
+//            if (AUTO_HIDE) {
+//                try {
+//                   // MediaPlayer mediaPlayer =
+//                           mediaPlayer.start();
+//
+//                  //  mediaPlayer.start();
+//
+//
+//                    //m_launcher.play(Launcher.ENGINE4_100);
+//
+//                } catch (RuntimeException e) {
+//                }
+//                // delayedHide(AUTO_HIDE_DELAY_MILLIS);
+//               // handleShakeEvent(10);
+//
+//            }
+//            return false;
+//        }
+//    };
 
-                    } catch (RuntimeException e) {
-                    }
-
-
-                //handleShakeEvent(10);
-
-               // delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
-    private final View.OnTouchListener mDelayHideTouchListener2 = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                try {
-                   // MediaPlayer mediaPlayer =
-                           mediaPlayer.start();
-
-                  //  mediaPlayer.start();
-
-
-                    //m_launcher.play(Launcher.ENGINE4_100);
-
-                } catch (RuntimeException e) {
-                }
-                // delayedHide(AUTO_HIDE_DELAY_MILLIS);
-               // handleShakeEvent(10);
-
-            }
-            return false;
-        }
-    };
-
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
-    }
+//    private void toggle() {
+//        if (mVisible) {
+//            hide();
+//        } else {
+//            show();
+//        }
+//    }
 
     private void hide() {
         // Hide UI first

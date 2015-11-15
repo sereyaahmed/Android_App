@@ -1,13 +1,17 @@
 package ac.actestapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.immersion.uhl.Launcher;
 
 import java.util.ArrayList;
 
@@ -41,28 +45,44 @@ public class Simon_Says extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        directions=new ArrayList<>();
         setContentView(R.layout.activity_simon__says);
-        directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_up));
+        directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_down));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_right));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_left));
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
-
-        // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
+        mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+            public void onSwipeLeft() {
+               directions.get(3).start();
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
+            }
+
+            @Override
+            public void onSwipeRight() {
+                directions.get(2).start();
+
+            }
+
+            @Override
+            public void onSwipeTop() {
+                directions.get(0).start();
+            }
+
+            @Override
+            public void onSwipeBottom() {
+                directions.get(1).start();
+            }
+
+            @Override
+            public void onClick() {
+                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();
+            }
+
+        });
 
     }
 
