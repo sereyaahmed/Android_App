@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -124,13 +125,21 @@ public class Activity2 extends AppCompatActivity { //Highway game
                 cdt.cancel();
                 onPause();
                             }
-            @Override
-            public void onClick() {
-                show();
-            }
-        });
+//            @Override
+//            public void onClick() {
+//
+//                MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+//            }
 
-        // Set up the user interaction to manually show or hide the system UI.
+        });
+//        mControlsView.setOnTouchListener(new OnClickListener(getApplicationContext()) {
+//
+//       public void On(){
+//           MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+//       }
+//        });
+
+            // Set up the user interaction to manually show or hide the system UI.
 
 
         // Upon interacting with UI controls, delay any scheduled hide()
@@ -149,7 +158,12 @@ public class Activity2 extends AppCompatActivity { //Highway game
         // are available.
         delayedHide(100);
     }
+    @Override
+    protected void onPause(){
+        super.onPause();
 
+        media_info.stop();
+    }
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away

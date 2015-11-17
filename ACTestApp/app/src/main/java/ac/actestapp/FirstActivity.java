@@ -120,12 +120,14 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onSwipeLeft() {
                 mediaPlayer.stop();
-                mediaPlayer2.stop();
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
                // selection.get(select_index).pause();
                 MediaPlayer.create(getApplicationContext(), R.raw.left).start();
                 if(select_index>0)
-                select_index--;
-                else select_index=selection.size()-1;
+                    select_index--;
+                else
+                    select_index=selection.size()-1;
                 selection.get(select_index).seekTo(0);
                 selection.get(select_index).start();
 
@@ -134,7 +136,8 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onSwipeRight() {
                 mediaPlayer.stop();
-                mediaPlayer2.stop();
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
                 MediaPlayer.create(getApplicationContext(), R.raw.right).start();
               //  selection.get(select_index).pause();
                 if(select_index<selection.size()-1)
@@ -148,11 +151,12 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onSwipeTop() {
                 if (select_index==0){
-                m_launcher.play(Launcher.BOUNCE_33);
-                Intent intent = new Intent(getApplicationContext(), Activity2.class);
-                startActivity(intent);}
+                    m_launcher.play(Launcher.BOUNCE_33);
+                    Intent intent = new Intent(getApplicationContext(), Activity2.class);
+                    startActivity(intent);
+                }
                 else if(select_index==1) {
-                    m_launcher.play(Launcher.EXPLOSION3);
+                    m_launcher.play(Launcher.BOUNCE_33);
                     Intent intent = new Intent (getApplicationContext(), Simon_Says.class);
                     startActivity(intent);
                 }
@@ -164,14 +168,15 @@ public class FirstActivity extends AppCompatActivity {
                 mediaPlayer.stop();
                 mediaPlayer2.seekTo(0);
                 mediaPlayer2.start();
+
             }
 
-            @Override
-            public void onClick() {
-                mediaPlayer.stop();
-                mediaPlayer2.seekTo(0);
-                mediaPlayer2.start();
-            }
+//            @Override
+//            public void onClick() {
+//                mediaPlayer.stop();
+//                mediaPlayer2.seekTo(0);
+//                mediaPlayer2.start();
+//            }
         });
 
     }

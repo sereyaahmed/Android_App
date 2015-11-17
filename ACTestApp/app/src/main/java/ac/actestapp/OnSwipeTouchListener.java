@@ -40,7 +40,7 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         @Override
         public boolean onDown(MotionEvent e) {
 
-           // onClick();
+        //    onClick();
             return true;
         }
 
@@ -48,17 +48,23 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             float distanceX = e2.getX() - e1.getX();
             float distanceY = e2.getY() - e1.getY();
-            if(Math.abs(distanceX)+Math.abs(distanceY)<SWIPE_DISTANCE_THRESHOLD) onClick();
+            if(Math.abs(distanceX)+Math.abs(distanceY) < SWIPE_DISTANCE_THRESHOLD) onClick();
             else if (distanceX > 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeRight(); return true;}
-                else if (distanceX < 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeLeft();return true;}
-               else if (distanceY < 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
-                        onSwipeTop();return true;}
-                    else if(distanceY > 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeBottom();return true;}
-          //  else {onClick();
-           return false;
+                onSwipeRight(); return true;}
+            else if (distanceX < 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
+                onSwipeLeft();return true;}
+            else if (distanceY < 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
+                onSwipeTop();return true;}
+            else if(distanceY > 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
+                onSwipeBottom();return true;}
+            //  else {onClick();
+            return false;
         }
+//        @Override
+//        public boolean onContextClick(MotionEvent e) {
+//
+//            onClick();
+//            return true;
+//        }
     }
 }

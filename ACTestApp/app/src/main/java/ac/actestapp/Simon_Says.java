@@ -42,45 +42,63 @@ public class Simon_Says extends AppCompatActivity {
     private View mControlsView;
     private boolean mVisible;
     ArrayList<MediaPlayer> directions;
+    ArrayList<MediaPlayer> piano;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         directions=new ArrayList<>();
+        piano=new ArrayList<>();
         setContentView(R.layout.activity_simon__says);
         directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
-        directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_down));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_right));
+        directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_down));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_left));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_up));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_right));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_down));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_left));
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
-               directions.get(3).start();
+                directions.get(3).seekTo(0);
+                piano.get(3).seekTo(0);
+                directions.get(3).start();
+               piano.get(3).start();
 
             }
 
             @Override
             public void onSwipeRight() {
-                directions.get(2).start();
+                directions.get(1).seekTo(0);
+                piano.get(1).seekTo(0);
+                directions.get(1).start();
+                piano.get(1).start();
 
             }
 
             @Override
             public void onSwipeTop() {
+                directions.get(0).seekTo(0);
+                piano.get(0).seekTo(0);
                 directions.get(0).start();
+                piano.get(0).start();
             }
 
             @Override
             public void onSwipeBottom() {
-                directions.get(1).start();
+                directions.get(2).seekTo(0);
+                piano.get(2).seekTo(0);
+                directions.get(2).start();
+                piano.get(2).start();
             }
 
-            @Override
-            public void onClick() {
-                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();
-            }
+//            @Override
+//            public void onClick() {
+//                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();
+//            }
 
         });
 
@@ -89,7 +107,7 @@ public class Simon_Says extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        MediaPlayer.create(getApplicationContext(),R.raw.highway_info);
+      //  MediaPlayer.create(getApplicationContext(),R.raw.highway_info);
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
