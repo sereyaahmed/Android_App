@@ -10,6 +10,10 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+//        ndk { //-> delete if errors
+  //          moduleName "rs3dTest"
+    //        abiFilter "x86"
+      //  } //<-
     }
     buildTypes {
         release {
@@ -24,7 +28,18 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('libs/UHL.jar')
     compile files('C:/Users/Ahmed/AndroidStudioProjects/ACTestApp/armeabi.jar')
-
+   // compile files('C:/Users/Ahmed/AndroidStudioProjects/ACTestApp/rs3dtest.jar')// delete if errors
+  //  compile fileTree(dir: "$buildDir/native-libs", include: 'native-libs.jar') // delete if errors.
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:support-v4:23.0.1'
 }
+// delete if errors ->
+/*task copyJniLibs(type: Copy) {
+    from fileTree(dir: 'libs/armeabi', include:'libAudioPluginRealSpace3D_vsEngine.so')
+    into 'src/main/jniLibs/armeabi'
+}
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn(copyJniLibs)
+}
+clean.dependsOn 'cleanCopyJniLibs'
+*/

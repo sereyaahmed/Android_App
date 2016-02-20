@@ -12,15 +12,16 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+
 import com.immersion.uhl.Launcher;
 
 import java.util.ArrayList;
 import java.util.Random;
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class Activity2 extends AppCompatActivity { //Highway game
+    //native void methodname();
+    //static{
+    //System.loadLibrary("rs3dtest");
+    //}
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -47,6 +48,8 @@ public class Activity2 extends AppCompatActivity { //Highway game
     private View mControlsView;
     private boolean mVisible;
 
+    private static final int SWIPE_DISTANCE_THRESHOLD = 100;
+    private static final int SWIPE_VELOCITY_THRESHOLD = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,12 +64,15 @@ public class Activity2 extends AppCompatActivity { //Highway game
 
         final Random gen = new Random();
 
-
-        final CountDownTimer cdt = new CountDownTimer(1500,1500){ // makes random direction car sound, delayed (duration, tick-time).
+//        final int[] counter = {0};
+        final CountDownTimer cdt = new CountDownTimer(2000,1500){ // makes random direction car sound, delayed (duration, tick-time).
 
             @Override
             public void onTick(long millisUntilFinished) {
 
+
+                car.get(0).seekTo(0);
+                car.get(1).seekTo(0);
             }
 
             @Override
@@ -77,9 +83,14 @@ public class Activity2 extends AppCompatActivity { //Highway game
                     this.cancel();
                 }
                 else{
-                rand[0] =gen.nextInt(2);
+                    if(rand[0]!=3)
+                car.get(rand[0]).pause();
+                    rand[0] =gen.nextInt(2);
+
                 car.get(rand[0]).start(); // random car "direction".
-                this.start();}
+                this.start();
+                }
+
             }
 
 
@@ -90,16 +101,14 @@ public class Activity2 extends AppCompatActivity { //Highway game
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls_act2);
         mContentView = findViewById(R.id.fullscreen_content_act2);
-
+        // alternative to below ->
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
-            @Override
             public void onSwipeLeft() {
                 //MediaPlayer.create(getApplicationContext(), R.raw.left).start();
                 if(position_right[0])
-                position_right[0] =false; // move to the left.
+                    position_right[0] =false; // move to the left.
                 else MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
             }
-            @Override
             public void onSwipeRight() {
                 //MediaPlayer.create(getApplicationContext(), R.raw.right).start();
                 if(!position_right[0])
@@ -107,7 +116,7 @@ public class Activity2 extends AppCompatActivity { //Highway game
                 else //MediaPlayer.create(getApplicationContext(),R.raw.scrape);
                     MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
             }
-            @Override
+
             public void onSwipeTop(){
                 cdt.cancel(); // cancel previous game
                 MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
@@ -116,22 +125,100 @@ public class Activity2 extends AppCompatActivity { //Highway game
                 position_right[0]=true;
                 while(engine.isPlaying());
                 rand[0]=3;
-               cdt.start(); // start game.
+                cdt.start(); // start game.
+            }
+
+            public void onSwipeBottom(){
+                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
+                startActivity(intent);
+                cdt.cancel();
+                onPause();}
+        });
+// FIX THIS ->
+       /** mContentView.setOnTouchListener((View.OnTouchListener) new GestureDetector(getApplicationContext(), new GestureDetector.OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e) {
+
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+
             }
             @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                float distanceX = e2.getX() - e1.getX();
+                float distanceY = e2.getY() - e1.getY();
+                if (distanceX > 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
+                    onSwipeRight(); return true;}
+                else if (distanceX < 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
+                    onSwipeLeft();return true;}
+                else if (distanceY < 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
+                    onSwipeTop();return true;}
+                else if(distanceY > 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
+                    onSwipeBottom();return true;}
+                //  else {onClick();
+                return false;
+
+            }
+
+            public void onSwipeLeft() {
+                //MediaPlayer.create(getApplicationContext(), R.raw.left).start();
+                if(position_right[0])
+                    position_right[0] =false; // move to the left.
+                else MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+            }
+            public void onSwipeRight() {
+                //MediaPlayer.create(getApplicationContext(), R.raw.right).start();
+                if(!position_right[0])
+                    position_right[0] =true; // move to the left.
+                else //MediaPlayer.create(getApplicationContext(),R.raw.scrape);
+                    MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+            }
+
+            public void onSwipeTop(){
+                cdt.cancel(); // cancel previous game
+                MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
+                media_info.stop();
+                engine.start();
+                position_right[0]=true;
+                while(engine.isPlaying());
+                rand[0]=3;
+                cdt.start(); // start game.
+            }
+
             public void onSwipeBottom(){
                 Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
                 startActivity(intent);
                 cdt.cancel();
                 onPause();
-                            }
+            }
+        }));
+
+*/
 //            @Override
-//            public void onClick() {
+//            public boolean onTouch(View v,MotionEvent event) {
 //
 //                MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+//                return true;
 //            }
 
-        });
+//        });
 //        mControlsView.setOnTouchListener(new OnClickListener(getApplicationContext()) {
 //
 //       public void On(){
@@ -162,7 +249,8 @@ public class Activity2 extends AppCompatActivity { //Highway game
     protected void onPause(){
         super.onPause();
 
-        media_info.stop();
+        media_info.pause();
+        media_info.seekTo(0);
     }
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
