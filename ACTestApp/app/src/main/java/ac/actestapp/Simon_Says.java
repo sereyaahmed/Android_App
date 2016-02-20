@@ -3,7 +3,6 @@ package ac.actestapp;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.CountDownTimer;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,22 +14,18 @@ import android.view.View;
 import com.immersion.uhl.Launcher;
 
 import java.util.ArrayList;
-import java.util.Random;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class Activity2 extends AppCompatActivity { //Highway game
+public class Simon_Says extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    public ArrayList<MediaPlayer> car; // sound files for passing cars will be loaded here.
     private static final boolean AUTO_HIDE = true;
-    final boolean[] position_right = {true}; // your vehicle position.
-    final int[] rand= {3};
-    private Launcher m_launcher;
-    MediaPlayer media_info;
+
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
@@ -46,135 +41,90 @@ public class Activity2 extends AppCompatActivity { //Highway game
     private View mContentView;
     private View mControlsView;
     private boolean mVisible;
-
+    ArrayList<MediaPlayer> directions;
+    ArrayList<MediaPlayer> piano;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MediaPlayer scrape = MediaPlayer.create(getApplicationContext(),R.raw.scrape); // load scrape sound
-        car = new ArrayList<>();
-        media_info = MediaPlayer.create(getApplicationContext(), R.raw.highway_info);
-        //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_left));
-        //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
-        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
-        car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_right));
-        m_launcher =  new Launcher(this);
-
-        final Random gen = new Random();
-
-
-        final CountDownTimer cdt = new CountDownTimer(1500,1500){ // makes random direction car sound, delayed (duration, tick-time).
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                if((rand[0]==0 && !position_right[0])||(rand[0]==1&&position_right[0])){ // if crash
-                    MediaPlayer.create(getApplicationContext(),R.raw.crash).start(); // boom
-                    m_launcher.play(Launcher.EXPLOSION3); // vzt vzt
-                    this.cancel();
-                }
-                else{
-                rand[0] =gen.nextInt(2);
-                car.get(rand[0]).start(); // random car "direction".
-                this.start();}
-            }
-
-
-        };
-
-        setContentView(R.layout.activity_2);
-
+        directions=new ArrayList<>();
+        piano=new ArrayList<>();
+        setContentView(R.layout.activity_simon__says);
+        directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
+        directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_right));
+        directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_down));
+        directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_left));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_up));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_right));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_down));
+        piano.add(MediaPlayer.create(getApplicationContext(),R.raw.piano_left));
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls_act2);
-        mContentView = findViewById(R.id.fullscreen_content_act2);
-
+        mControlsView = findViewById(R.id.fullscreen_content_controls);
+        mContentView = findViewById(R.id.fullscreen_content);
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
-                //MediaPlayer.create(getApplicationContext(), R.raw.left).start();
-                if(position_right[0])
-                position_right[0] =false; // move to the left.
-                else MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+                directions.get(3).seekTo(0);
+                piano.get(3).seekTo(0);
+                directions.get(3).start();
+               piano.get(3).start();
+
             }
+
             @Override
             public void onSwipeRight() {
-                //MediaPlayer.create(getApplicationContext(), R.raw.right).start();
-                if(!position_right[0])
-                    position_right[0] =true; // move to the left.
-                else //MediaPlayer.create(getApplicationContext(),R.raw.scrape);
-                    MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+                directions.get(1).seekTo(0);
+                piano.get(1).seekTo(0);
+                directions.get(1).start();
+                piano.get(1).start();
+
             }
+
             @Override
-            public void onSwipeTop(){
-                cdt.cancel(); // cancel previous game
-                MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
-                media_info.stop();
-                engine.start();
-                position_right[0]=true;
-                while(engine.isPlaying());
-                rand[0]=3;
-               cdt.start(); // start game.
+            public void onSwipeTop() {
+                directions.get(0).seekTo(0);
+                piano.get(0).seekTo(0);
+                directions.get(0).start();
+                piano.get(0).start();
             }
+
             @Override
-            public void onSwipeBottom(){
-                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
-                startActivity(intent);
-                cdt.cancel();
-                onPause();
-                            }
+            public void onSwipeBottom() {
+                directions.get(2).seekTo(0);
+                piano.get(2).seekTo(0);
+                directions.get(2).start();
+                piano.get(2).start();
+            }
+
 //            @Override
 //            public void onClick() {
-//
-//                MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
+//                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();
 //            }
 
         });
-//        mControlsView.setOnTouchListener(new OnClickListener(getApplicationContext()) {
-//
-//       public void On(){
-//           MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
-//       }
-//        });
 
-            // Set up the user interaction to manually show or hide the system UI.
-
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-       // -------------- adding buttons is done in the activity layout xml.
-       // findViewById(R.id.highway_button).setOnTouchListener(mDelayHideTouchListener3);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        media_info.start();
+      //  MediaPlayer.create(getApplicationContext(),R.raw.highway_info);
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
     }
-    @Override
-    protected void onPause(){
-        super.onPause();
 
-        media_info.stop();
-    }
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    private final View.OnTouchListener mDelayHideTouchListener3 = new View.OnTouchListener() {
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-
-            Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
-            startActivity(intent);
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
             return false;
         }
     };
@@ -240,8 +190,6 @@ public class Activity2 extends AppCompatActivity { //Highway game
                 actionBar.show();
             }
             mControlsView.setVisibility(View.VISIBLE);
-
-
         }
     };
 

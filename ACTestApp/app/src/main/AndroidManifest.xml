@@ -31,6 +31,12 @@
             android:label="@string/title_activity_2"
             android:theme="@style/FullscreenTheme" >
         </activity>
+        <activity
+            android:name=".Simon_Says"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_simon__says"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
     </application>
 
 </manifest>
