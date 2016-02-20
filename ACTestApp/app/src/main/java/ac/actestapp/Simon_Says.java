@@ -43,12 +43,14 @@ public class Simon_Says extends AppCompatActivity {
     private boolean mVisible;
     ArrayList<MediaPlayer> directions;
     ArrayList<MediaPlayer> piano;
+    MediaPlayer info;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         directions=new ArrayList<>();
         piano=new ArrayList<>();
         setContentView(R.layout.activity_simon__says);
+         info = new MediaPlayer().create(getApplicationContext(),R.raw.simon_info);
         directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_right));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_down));
@@ -94,7 +96,13 @@ public class Simon_Says extends AppCompatActivity {
                 directions.get(2).start();
                 piano.get(2).start();
             }
-
+            public void onSingleTap(){
+              info.seekTo(0);
+                info.start();}
+            public void onDoubleTap2(){
+                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
+                startActivity(intent);
+                onPause();}
 //            @Override
 //            public void onClick() {
 //                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();

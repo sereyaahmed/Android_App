@@ -25,9 +25,15 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
     }
     public void onSwipeBottom() {
     }
+    public void onSingleTap(){
+    }
+    public void onDoubleTap2(){
+
+    }
     public boolean onTouch(View v, MotionEvent event) {
         if (gestureDetector.onTouchEvent(event)) return true;
         else { return false;}
+//        return true;
     }
     public void onClick(){
 
@@ -60,6 +66,22 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
             //  else {onClick();
             return false;
         }
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e1){
+            onSingleTap();return true;
+        }
+        @Override
+        public boolean onDoubleTap(MotionEvent e1){
+            onDoubleTap2();return true;
+        }
+
+//        @Override
+//        public boolean onTouchEvent(MotionEvent event){
+//            float ev = event.getX();
+//            if (ev != 0)
+//                return true;
+//            else return false;
+//        }
 //        @Override
 //        public boolean onContextClick(MotionEvent e) {
 //
