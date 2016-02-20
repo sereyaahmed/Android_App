@@ -14,6 +14,7 @@ import android.view.View;
 import com.immersion.uhl.Launcher;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -43,12 +44,18 @@ public class Simon_Says extends AppCompatActivity {
     private boolean mVisible;
     ArrayList<MediaPlayer> directions;
     ArrayList<MediaPlayer> piano;
+    ArrayList<Integer> gameSteps;
+    int playerPos;
     MediaPlayer info;
+    public boolean isPlaying;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         directions=new ArrayList<>();
         piano=new ArrayList<>();
+        gameSteps= new ArrayList<>();
+        playerPos=0;
+        isPlaying=false;
         setContentView(R.layout.activity_simon__says);
          info = new MediaPlayer().create(getApplicationContext(),R.raw.simon_info);
         directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
@@ -62,39 +69,41 @@ public class Simon_Says extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
+        info.start();
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
-                directions.get(3).seekTo(0);
+                if(!isPlaying){
                 piano.get(3).seekTo(0);
-                directions.get(3).start();
                piano.get(3).start();
+                verifyStep(3);}
 
             }
 
             @Override
             public void onSwipeRight() {
-                directions.get(1).seekTo(0);
+                if(!isPlaying){
                 piano.get(1).seekTo(0);
-                directions.get(1).start();
                 piano.get(1).start();
+                verifyStep(1);}
 
             }
 
             @Override
             public void onSwipeTop() {
-                directions.get(0).seekTo(0);
+                if(!isPlaying){
                 piano.get(0).seekTo(0);
-                directions.get(0).start();
                 piano.get(0).start();
+                verifyStep(0);}
             }
 
             @Override
             public void onSwipeBottom() {
-                directions.get(2).seekTo(0);
-                piano.get(2).seekTo(0);
-                directions.get(2).start();
-                piano.get(2).start();
+                if(!isPlaying) {
+                    piano.get(2).seekTo(0);
+                    piano.get(2).start();
+                    verifyStep(2);
+                }
             }
             public void onSingleTap(){
               info.seekTo(0);
@@ -102,7 +111,13 @@ public class Simon_Says extends AppCompatActivity {
             public void onDoubleTap2(){
                 Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
                 startActivity(intent);
-                onPause();}
+                onPause();
+            info.stop();}
+            public void longPress(){
+                info.stop();
+                if(!isPlaying)
+                    start();
+            }
 //            @Override
 //            public void onClick() {
 //                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();
@@ -122,11 +137,26 @@ public class Simon_Says extends AppCompatActivity {
         delayedHide(100);
     }
 
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
+    public boolean verifyStep(int x) {
+//        if(playerPos<gameSteps.size()){
+        boolean ret;
+        if(gameSteps.get(playerPos)==x){  playerPos++; ret= true;}
+        else{playerPos=0; gameSteps=new ArrayList<>(); ret= false;}
+        if(playerPos==gameSteps.size() && ret){ start(); playerPos=0;}
+        return ret;
+    }
+    public void start() {
+        while(piano.get(0).isPlaying() ||piano.get(1).isPlaying() || piano.get(2).isPlaying() || piano.get(3).isPlaying());
+        isPlaying=true;
+        Random gen=new Random();
+            gameSteps.add(gen.nextInt(4));
+            for (int i=0;i < gameSteps.size(); i++) {
+                directions.get(gameSteps.get(i)).start();
+                piano.get(gameSteps.get(i)).start();
+           while(piano.get(gameSteps.get(i)).isPlaying());
+            }
+    isPlaying=false;
+    }
     private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
