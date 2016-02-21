@@ -3,6 +3,7 @@ package ac.actestapp;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,29 +15,12 @@ import android.view.View;
 import com.immersion.uhl.Launcher;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-public class Simon_Says extends AppCompatActivity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
 
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
     private static final int UI_ANIMATION_DELAY = 300;
 
     private View mContentView;
@@ -47,7 +31,9 @@ public class Simon_Says extends AppCompatActivity {
     ArrayList<Integer> gameSteps;
     int playerPos;
     MediaPlayer info;
+    int score;
     public boolean isPlaying;
+    private TextToSpeech tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +42,10 @@ public class Simon_Says extends AppCompatActivity {
         gameSteps= new ArrayList<>();
         playerPos=0;
         isPlaying=false;
+        tts = new TextToSpeech(this, this);
+        tts.setPitch(-8);
         setContentView(R.layout.activity_simon__says);
+        score=0;
          info = new MediaPlayer().create(getApplicationContext(),R.raw.simon_info);
         directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_right));
@@ -73,56 +62,68 @@ public class Simon_Says extends AppCompatActivity {
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
-                if(!isPlaying){
+
                 piano.get(3).seekTo(0);
                piano.get(3).start();
-                verifyStep(3);}
+                if(gameSteps.size()!=0)
+                if(!verifyStep(3)){
 
+                    tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null);}
             }
 
             @Override
             public void onSwipeRight() {
-                if(!isPlaying){
+
                 piano.get(1).seekTo(0);
                 piano.get(1).start();
-                verifyStep(1);}
+                if(gameSteps.size()!=0)
+                    if(!verifyStep(1)){
+
+                        tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null);}
 
             }
 
             @Override
             public void onSwipeTop() {
-                if(!isPlaying){
+
                 piano.get(0).seekTo(0);
                 piano.get(0).start();
-                verifyStep(0);}
+                if(gameSteps.size()!=0)
+                    if(!verifyStep(0)){
+
+                tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null); }
             }
 
             @Override
             public void onSwipeBottom() {
-                if(!isPlaying) {
+
                     piano.get(2).seekTo(0);
                     piano.get(2).start();
-                    verifyStep(2);
-                }
+                if(gameSteps.size()!=0)
+                    if(!verifyStep(2)) {
+                       tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null);
+                    }
+
             }
             public void onSingleTap(){
-              info.seekTo(0);
-                info.start();}
+                if(!info.isPlaying()){
+                    info.seekTo(0);
+                    info.start();}
+                else
+                    info.pause();
+            }
             public void onDoubleTap2(){
                 Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
                 startActivity(intent);
                 onPause();
             info.stop();}
             public void longPress(){
-                info.stop();
+                info.seekTo(0);
                 if(!isPlaying)
-                    start();
-            }
-//            @Override
-//            public void onClick() {
-//                MediaPlayer.create(getApplicationContext(), R.raw.scrape).start();
-//            }
+                {gameSteps= new ArrayList<>();
+                    start();}
 
+            }
         });
 
     }
@@ -134,14 +135,16 @@ public class Simon_Says extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+       // delayedHide(100);
+        mControlsView.setVisibility(View.GONE);
+        getSupportActionBar().hide();
     }
 
     public boolean verifyStep(int x) {
 //        if(playerPos<gameSteps.size()){
         boolean ret;
         if(gameSteps.get(playerPos)==x){  playerPos++; ret= true;}
-        else{playerPos=0; gameSteps=new ArrayList<>(); ret= false;}
+        else{playerPos=0; score=gameSteps.size()-1; gameSteps=new ArrayList<>(); ret= false;}
         if(playerPos==gameSteps.size() && ret){ start(); playerPos=0;}
         return ret;
     }
@@ -152,99 +155,25 @@ public class Simon_Says extends AppCompatActivity {
             gameSteps.add(gen.nextInt(4));
             for (int i=0;i < gameSteps.size(); i++) {
                 directions.get(gameSteps.get(i)).start();
+                piano.get(gameSteps.get(i)).seekTo(0);
                 piano.get(gameSteps.get(i)).start();
-           while(piano.get(gameSteps.get(i)).isPlaying());
+            while(directions.get(gameSteps.get(i)).isPlaying());
             }
     isPlaying=false;
     }
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
 
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
+    @Override
+    public void onInit(int status) {
+        tts.setLanguage(Locale.US);
     }
-
-    private void hide() {
-        // Hide UI first
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
+    @Override
+    public void onDestroy() {
+        // Don't forget to shutdown!
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
         }
-        mControlsView.setVisibility(View.GONE);
-        mVisible = false;
-
-        // Schedule a runnable to remove the status and navigation bar after a delay
-        mHideHandler.removeCallbacks(mShowPart2Runnable);
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    private final Runnable mHidePart2Runnable = new Runnable() {
-        @SuppressLint("InlinedApi")
-        @Override
-        public void run() {
-            // Delayed removal of status and navigation bar
-
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-    };
-
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
-
-        // Schedule a runnable to display UI elements after a delay
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-            mControlsView.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private final Handler mHideHandler = new Handler();
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
-
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
-    private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
+        info.stop();
+        super.onDestroy();
     }
 }
