@@ -30,10 +30,10 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
     ArrayList<MediaPlayer> piano;
     ArrayList<Integer> gameSteps;
     int playerPos;
-    MediaPlayer info;
     int score;
     public boolean isPlaying;
     private TextToSpeech tts;
+    String info;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +46,7 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
         tts.setPitch(-8);
         setContentView(R.layout.activity_simon__says);
         score=0;
-         info = new MediaPlayer().create(getApplicationContext(),R.raw.simon_info);
+        info="Listen to the given directions then follow them to play the tune. Tap and hold to start. Tap twice to return to the menu. Tap once to repeat this message.";
         directions.add(MediaPlayer.create(getApplicationContext(), R.raw.simon_up));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_right));
         directions.add(MediaPlayer.create(getApplicationContext(),R.raw.simon_down));
@@ -58,17 +58,18 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-        info.start();
+
         mContentView.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
             @Override
             public void onSwipeLeft() {
 
                 piano.get(3).seekTo(0);
-               piano.get(3).start();
-                if(gameSteps.size()!=0)
-                if(!verifyStep(3)){
+                piano.get(3).start();
+                if (gameSteps.size() != 0 && !isPlaying)
+                    if (!verifyStep(3)) {
 
-                    tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null);}
+                        tts.speak("Game over. your score is " + score, TextToSpeech.QUEUE_FLUSH, null);
+                    }
             }
 
             @Override
@@ -76,10 +77,11 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
 
                 piano.get(1).seekTo(0);
                 piano.get(1).start();
-                if(gameSteps.size()!=0)
-                    if(!verifyStep(1)){
+                if (gameSteps.size() != 0 && !isPlaying)
+                    if (!verifyStep(1)) {
 
-                        tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null);}
+                        tts.speak("Game over. your score is " + score, TextToSpeech.QUEUE_FLUSH, null);
+                    }
 
             }
 
@@ -88,56 +90,57 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
 
                 piano.get(0).seekTo(0);
                 piano.get(0).start();
-                if(gameSteps.size()!=0)
-                    if(!verifyStep(0)){
+                if (gameSteps.size() != 0 && !isPlaying)
+                    if (!verifyStep(0)) {
 
-                tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null); }
+                        tts.speak("Game over. your score is " + score, TextToSpeech.QUEUE_FLUSH, null);
+                    }
             }
 
             @Override
             public void onSwipeBottom() {
 
-                    piano.get(2).seekTo(0);
-                    piano.get(2).start();
-                if(gameSteps.size()!=0)
-                    if(!verifyStep(2)) {
-                       tts.speak("Game over. your score is "+score, TextToSpeech.QUEUE_FLUSH, null);
+                piano.get(2).seekTo(0);
+                piano.get(2).start();
+                if (gameSteps.size() != 0 && !isPlaying)
+                    if (!verifyStep(2)) {
+                        tts.speak("Game over. your score is " + score, TextToSpeech.QUEUE_FLUSH, null);
                     }
 
             }
-            public void onSingleTap(){
-                if(!info.isPlaying()){
-                    info.seekTo(0);
-                    info.start();}
-                else
-                    info.pause();
+
+            public void onSingleTap() {
+                if (!tts.isSpeaking()) {
+                    tts.speak(info, TextToSpeech.QUEUE_FLUSH, null);
+                } else
+                    tts.stop();
             }
-            public void onDoubleTap2(){
+
+            public void onDoubleTap2() {
+                gameSteps=null;
                 Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
                 startActivity(intent);
                 onPause();
-            info.stop();}
-            public void longPress(){
-                info.seekTo(0);
-                if(!isPlaying)
-                {gameSteps= new ArrayList<>();
-                    start();}
+                tts.stop();
+            }
+
+            public void longPress() {
+                tts.stop();
+                    gameSteps = new ArrayList<>();
+                    mHandler.post(start);
+
 
             }
         });
-
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-      //  MediaPlayer.create(getApplicationContext(),R.raw.highway_info);
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-       // delayedHide(100);
         mControlsView.setVisibility(View.GONE);
         getSupportActionBar().hide();
+        delayedSpeak(100);
+
     }
 
     public boolean verifyStep(int x) {
@@ -145,26 +148,14 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
         boolean ret;
         if(gameSteps.get(playerPos)==x){  playerPos++; ret= true;}
         else{playerPos=0; score=gameSteps.size()-1; gameSteps=new ArrayList<>(); ret= false;}
-        if(playerPos==gameSteps.size() && ret){ start(); playerPos=0;}
+        if(playerPos==gameSteps.size() && ret){ mHandler.post(start); playerPos=0;}
         return ret;
     }
-    public void start() {
-        while(piano.get(0).isPlaying() ||piano.get(1).isPlaying() || piano.get(2).isPlaying() || piano.get(3).isPlaying());
-        isPlaying=true;
-        Random gen=new Random();
-            gameSteps.add(gen.nextInt(4));
-            for (int i=0;i < gameSteps.size(); i++) {
-                directions.get(gameSteps.get(i)).start();
-                piano.get(gameSteps.get(i)).seekTo(0);
-                piano.get(gameSteps.get(i)).start();
-            while(directions.get(gameSteps.get(i)).isPlaying());
-            }
-    isPlaying=false;
-    }
+
 
     @Override
     public void onInit(int status) {
-        tts.setLanguage(Locale.US);
+        tts.setLanguage(Locale.UK);
     }
     @Override
     public void onDestroy() {
@@ -173,7 +164,43 @@ public class Simon_Says extends AppCompatActivity implements TextToSpeech.OnInit
             tts.stop();
             tts.shutdown();
         }
-        info.stop();
         super.onDestroy();
     }
+    private final Handler mHandler = new Handler();
+    private final Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            tts.speak(info, TextToSpeech.QUEUE_FLUSH, null);
+        }
+    };
+
+    /**
+     * Schedules a call to hide() in [delay] milliseconds, canceling any
+     * previously scheduled calls.
+     */
+    private void delayedSpeak(int delayMillis) {
+        mHandler.removeCallbacks(mRunnable);
+        mHandler.postDelayed(mRunnable, delayMillis);
+}
+    private Runnable start= new Runnable() {
+        @Override
+        public void run() {
+           // while(piano.get(0).isPlaying() ||piano.get(1).isPlaying() || piano.get(2).isPlaying() || piano.get(3).isPlaying());
+            isPlaying=true;
+            Random gen=new Random();
+            gameSteps.add(gen.nextInt(4));
+            for (int i=0;i < gameSteps.size(); i++) {
+                try {
+                    Thread.sleep(550);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                directions.get(gameSteps.get(i)).start();
+                piano.get(gameSteps.get(i)).seekTo(0);
+                piano.get(gameSteps.get(i)).start();
+
+            }
+            isPlaying=false;
+        }
+    };
 }

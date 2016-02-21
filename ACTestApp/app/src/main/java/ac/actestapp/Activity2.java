@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,8 +17,9 @@ import android.view.View;
 import com.immersion.uhl.Launcher;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
-public class Activity2 extends AppCompatActivity { //Highway game
+public class Activity2 extends AppCompatActivity implements TextToSpeech.OnInitListener { //Highway game
     //native void methodname();
     //static{
     //System.loadLibrary("rs3dtest");
@@ -31,7 +33,7 @@ public class Activity2 extends AppCompatActivity { //Highway game
     final boolean[] position_right = {true}; // your vehicle position.
     final int[] rand= {3};
     private Launcher m_launcher;
-    MediaPlayer media_info;
+
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
@@ -43,11 +45,11 @@ public class Activity2 extends AppCompatActivity { //Highway game
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
-
+    private TextToSpeech tts;
     private View mContentView;
     private View mControlsView;
     private boolean mVisible;
-
+    public String info;
     private static final int SWIPE_DISTANCE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
     @Override
@@ -55,13 +57,13 @@ public class Activity2 extends AppCompatActivity { //Highway game
         super.onCreate(savedInstanceState);
         MediaPlayer scrape = MediaPlayer.create(getApplicationContext(),R.raw.scrape); // load scrape sound
         car = new ArrayList<>();
-        media_info = MediaPlayer.create(getApplicationContext(), R.raw.highway_info);
-        //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_left));
-        //car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_close_right));
+        info="Swipe right and left to avoid incoming cars. Tap and hold to start. Tap twice to go to the menu. Tap once to repeat this message.";
+
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_left));
         car.add(MediaPlayer.create(getApplicationContext(), R.raw.car_right));
         m_launcher =  new Launcher(this);
-
+        tts = new TextToSpeech(this, this);
+        tts.setPitch(-8);
         final Random gen = new Random();
 
 //        final int[] counter = {0};
@@ -118,235 +120,69 @@ public class Activity2 extends AppCompatActivity { //Highway game
             }
 
             public void onSwipeTop(){
+
+            }
+            public void longPress() {
                 cdt.cancel(); // cancel previous game
                 MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
-                media_info.stop();
+                tts.stop();
                 engine.start();
                 position_right[0]=true;
                 while(engine.isPlaying());
                 rand[0]=3;
                 cdt.start(); // start game.
             }
-
-            public void onSwipeBottom(){
+            public void onSwipeBottom(){}
+            public void onSingleTap() {
+                if (!tts.isSpeaking()) {
+                    tts.speak(info, TextToSpeech.QUEUE_FLUSH, null);
+                } else
+                    tts.stop();
+            }
+            public void onDoubleTap2() { //pause and go to menu
                 Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
-                startActivity(intent);
-                cdt.cancel();
-                onPause();}
+                    startActivity(intent);
+                    cdt.cancel();
+                    onPause();}
         });
-// FIX THIS ->
-       /** mContentView.setOnTouchListener((View.OnTouchListener) new GestureDetector(getApplicationContext(), new GestureDetector.OnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return false;
-            }
 
-            @Override
-            public void onShowPress(MotionEvent e) {
-
-            }
-
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                return false;
-            }
-
-            @Override
-            public void onLongPress(MotionEvent e) {
-
-            }
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                float distanceX = e2.getX() - e1.getX();
-                float distanceY = e2.getY() - e1.getY();
-                if (distanceX > 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeRight(); return true;}
-                else if (distanceX < 0 && Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeLeft();return true;}
-                else if (distanceY < 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeTop();return true;}
-                else if(distanceY > 0 && Math.abs(distanceY) > Math.abs(distanceX) && Math.abs(distanceY) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD){
-                    onSwipeBottom();return true;}
-                //  else {onClick();
-                return false;
-
-            }
-
-            public void onSwipeLeft() {
-                //MediaPlayer.create(getApplicationContext(), R.raw.left).start();
-                if(position_right[0])
-                    position_right[0] =false; // move to the left.
-                else MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
-            }
-            public void onSwipeRight() {
-                //MediaPlayer.create(getApplicationContext(), R.raw.right).start();
-                if(!position_right[0])
-                    position_right[0] =true; // move to the left.
-                else //MediaPlayer.create(getApplicationContext(),R.raw.scrape);
-                    MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
-            }
-
-            public void onSwipeTop(){
-                cdt.cancel(); // cancel previous game
-                MediaPlayer engine =MediaPlayer.create(getApplicationContext(),R.raw.engine_start);
-                media_info.stop();
-                engine.start();
-                position_right[0]=true;
-                while(engine.isPlaying());
-                rand[0]=3;
-                cdt.start(); // start game.
-            }
-
-            public void onSwipeBottom(){
-                Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
-                startActivity(intent);
-                cdt.cancel();
-                onPause();
-            }
-        }));
-
-*/
-//            @Override
-//            public boolean onTouch(View v,MotionEvent event) {
-//
-//                MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
-//                return true;
-//            }
-
-//        });
-//        mControlsView.setOnTouchListener(new OnClickListener(getApplicationContext()) {
-//
-//       public void On(){
-//           MediaPlayer.create(getApplicationContext(),R.raw.scrape).start();
-//       }
-//        });
-
-            // Set up the user interaction to manually show or hide the system UI.
-
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-       // -------------- adding buttons is done in the activity layout xml.
-       // findViewById(R.id.highway_button).setOnTouchListener(mDelayHideTouchListener3);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        media_info.start();
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(100);
+        mControlsView.setVisibility(View.GONE);
+        getSupportActionBar().hide();
+        delayedSpeak(100);
     }
     @Override
     protected void onPause(){
+        tts.stop();
         super.onPause();
-
-        media_info.pause();
-        media_info.seekTo(0);
-    }
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener3 = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-
-            Intent intent = new Intent(getApplicationContext(), FirstActivity.class);
-            startActivity(intent);
-            return false;
-        }
-    };
-
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
     }
 
-    private void hide() {
-        // Hide UI first
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-        mControlsView.setVisibility(View.GONE);
-        mVisible = false;
-
-        // Schedule a runnable to remove the status and navigation bar after a delay
-        mHideHandler.removeCallbacks(mShowPart2Runnable);
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+    @Override
+    public void onInit(int status) {
+        tts.setLanguage(Locale.UK);
     }
-
-    private final Runnable mHidePart2Runnable = new Runnable() {
-        @SuppressLint("InlinedApi")
+    @Override
+    public void onDestroy() {
+        // Don't forget to shutdown!
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+    private final Handler mHandler = new Handler();
+    private final Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            // Delayed removal of status and navigation bar
-
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            tts.speak(info, TextToSpeech.QUEUE_FLUSH, null);
         }
     };
-
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
-
-        // Schedule a runnable to display UI elements after a delay
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-            mControlsView.setVisibility(View.VISIBLE);
-
-
-        }
-    };
-
-    private final Handler mHideHandler = new Handler();
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
-
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
-    private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    private void delayedSpeak(int delayMillis) {
+        mHandler.removeCallbacks(mRunnable);
+        mHandler.postDelayed(mRunnable, delayMillis);
     }
 }

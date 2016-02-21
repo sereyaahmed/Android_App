@@ -80,18 +80,5 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
             longPress();
         }
 
-//        @Override
-//        public boolean onTouchEvent(MotionEvent event){
-//            float ev = event.getX();
-//            if (ev != 0)
-//                return true;
-//            else return false;
-//        }
-//        @Override
-//        public boolean onContextClick(MotionEvent e) {
-//
-//            onClick();
-//            return true;
-//        }
     }
 }
